@@ -19,14 +19,13 @@ pipe = DiffusionPipeline.from_pretrained(
     use_safetensors=True,
     variant="fp16",
 )
-pipe.load_lora_weights("latent-consistency/lcm-lora-sdxl", cache_dir="lcm-cache")
-pipe.fuse_lora()
 pipe.save_pretrained("./sdxl-cache", safe_serialization=True)
+# Save SDXL separate from LoRA
+pipe.load_lora_weights("latent-consistency/lcm-lora-sdxl", cache_dir="lcm-cache")
 
+safety = StableDiffusionSafetyChecker.from_pretrained(
+    "CompVis/stable-diffusion-safety-checker",
+    torch_dtype=torch.float16,
+)
 
-# safety = StableDiffusionSafetyChecker.from_pretrained(
-#     "CompVis/stable-diffusion-safety-checker",
-#     torch_dtype=torch.float16,
-# )
-
-# safety.save_pretrained("./safety-cache")
+safety.save_pretrained("./safety-cache")
